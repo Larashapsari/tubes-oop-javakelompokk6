@@ -9,11 +9,11 @@ package com.mycompany.resepmasakan;
  * @author Ayass
  */
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.border.TitledBorder;
 
 public class MainFrame extends JFrame {
 
@@ -21,7 +21,7 @@ public class MainFrame extends JFrame {
     private JTextArea taBahan, taLangkah;
     private JButton btnSimpan, btnLihat;
 
-    // TEMPAT SIMPAN RESEP
+    // TEMPAT SIMPAN RESEP 
     private ArrayList<String> daftarResep = new ArrayList<>();
 
     public MainFrame() {
@@ -34,7 +34,7 @@ public class MainFrame extends JFrame {
         JPanel mainPanel = new JPanel(new BorderLayout(10,10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-        //PANEL INPUT
+        // PANEL INPUT 
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5,5,5,5);
@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
 
         mainPanel.add(inputPanel, BorderLayout.NORTH);
 
-        // BAHAN 
+        //PANEL BAHAN 
         taBahan = new JTextArea(6,30);
         taBahan.setLineWrap(true);
         taBahan.setWrapStyleWord(true);
@@ -79,7 +79,7 @@ public class MainFrame extends JFrame {
         bahanPanel.add(new JScrollPane(taBahan), BorderLayout.CENTER);
         bahanPanel.add(infoBahan, BorderLayout.SOUTH);
 
-        //LANGKAH 
+        // PANEL LANGKAH
         taLangkah = new JTextArea(6,30);
         taLangkah.setLineWrap(true);
         taLangkah.setWrapStyleWord(true);
@@ -109,7 +109,7 @@ public class MainFrame extends JFrame {
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
 
-        //TOMBOL SIMPAN DAN LIHAT RESEP
+        // BUTTON
         btnSimpan = new JButton("Simpan Resep");
         btnLihat  = new JButton("Lihat Resep");
 
@@ -121,12 +121,12 @@ public class MainFrame extends JFrame {
 
         add(mainPanel);
 
-        //EVENT 
+        // EVENT 
         btnSimpan.addActionListener(e -> simpanResep());
         btnLihat.addActionListener(e -> lihatResep());
     }
 
-    //VALIDASI SIMPAN RESEP 
+    //SIMPAN RESEP 
     private void simpanResep() {
 
         // VALIDASI KOSONG
@@ -144,28 +144,50 @@ public class MainFrame extends JFrame {
             return;
         }
 
-        // VALIDASI FORMAT BAHAN
+        // VALIDASI FORMAT LANGKAH 
+        String teksLangkah = taLangkah.getText().trim();
+
+        if (teksLangkah.contains(",") && !teksLangkah.contains("\n")) {
+            JOptionPane.showMessageDialog(
+                this,
+                "Format langkah salah.\nGunakan ENTER untuk memisahkan setiap langkah",
+                "Format Salah",
+                JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+
+        // VALIDASI FORMAT BAHAN & KALORI 
         Pattern pola = Pattern.compile("(.+)\\((.+)\\)");
         double totalKalori = 0;
 
         for (String baris : taBahan.getText().split("\n")) {
             Matcher m = pola.matcher(baris.trim());
+
             if (!m.matches()) {
-                JOptionPane.showMessageDialog(this,
-                        "Format bahan salah\nGunakan: nama(kalori)");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Format bahan salah\nGunakan: nama(kalori)",
+                        "Format Salah",
+                        JOptionPane.ERROR_MESSAGE
+                );
                 return;
             }
 
             try {
                 totalKalori += Double.parseDouble(m.group(2));
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this,
-                        "Kalori harus angka dan pakai titik (.)");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Kalori harus angka dan pakai titik (.)",
+                        "Input Salah",
+                        JOptionPane.ERROR_MESSAGE
+                );
                 return;
             }
         }
 
-        // SIMPAN KE ARRAYLIST
+        // SIMPAN RESEP 
         StringBuilder sb = new StringBuilder();
         sb.append("Nama Resep: ").append(tfNama.getText()).append("\n");
         sb.append("Tipe Masakan: ").append(tfTipe.getText()).append("\n");
@@ -176,8 +198,12 @@ public class MainFrame extends JFrame {
 
         daftarResep.add(sb.toString());
 
-        JOptionPane.showMessageDialog(this,
-                "Resep berhasil disimpan!");
+        JOptionPane.showMessageDialog(
+                this,
+                "Resep berhasil disimpan!",
+                "Sukses",
+                JOptionPane.INFORMATION_MESSAGE
+        );
 
         tfNama.setText("");
         tfTipe.setText("");
@@ -185,12 +211,16 @@ public class MainFrame extends JFrame {
         taLangkah.setText("");
     }
 
-    //VALIDASI LIHAT RESEP
+    //LIHAT RESEP
     private void lihatResep() {
 
         if (daftarResep.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Belum ada resep tersimpan");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Belum ada resep tersimpan",
+                    "Info",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
             return;
         }
 
@@ -218,6 +248,3 @@ public class MainFrame extends JFrame {
         });
     }
 }
-
-
-
